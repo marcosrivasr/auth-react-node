@@ -30,8 +30,14 @@ export default function Login() {
       });
       if (response.ok) {
         const json = await response.json();
+        console.log(json);
         auth.setIsAuthenticated(true);
-        auth.setAccessToken(json.token);
+        auth.setAccessTokenAndRefreshToken(
+          json.body.accessToken,
+          json.body.refreshToken
+        );
+        //localStorage.setItem("token", JSON.stringify(json.body));
+        //auth.setAccessToken(json.body.accessToken);
       }
     } catch (error) {
       console.log(error);

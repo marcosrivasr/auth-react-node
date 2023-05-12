@@ -8,7 +8,7 @@ function sign(payload, isAccessToken) {
       ? process.env.ACCESS_TOKEN_SECRET
       : process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: "1h",
+      expiresIn: 3600,
     }
   );
 }

@@ -5,41 +5,30 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  function handleChange(e: React.ChangeEvent) {
-    const { name, value } = e.target as HTMLInputElement;
-    if (name === "username") {
-      setUsername(value);
-    }
-    if (name === "password") {
-      setPassword(value);
-    }
-    if (name === "name") {
-      setName(value);
-    }
-  }
-
-  function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log(username, password, name);
-    fetch("http://localhost:3000/api/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-        name,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+
+    try {
+      const response = await fetch("http://localhost:3000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, name }),
       });
+      if (response.ok) {
+        const json = await response.json();
+        console.log(json);
+        //auth.setIsAuthenticated(true);
+        //auth.setAccessToken(json.token);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
     setUsername("");
     setPassword("");
     setName("");
-    // window.location.href = "/";
+    window.location.href = "/";
   }
 
   return (
@@ -48,18 +37,26 @@ export default function Signup() {
 
       <form onSubmit={handleSubmit}>
         <label>Name</label>
-        <input name="name" onChange={handleChange} value={name} />
+        <input
+          name="name"
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+        />
         <label>Username</label>
-        <input name="username" onChange={handleChange} value={username} />
+        <input
+          name="username"
+          onChange={(e) => setUsername(e.target.value)}
+          value={username}
+        />
         <label>Password</label>
         <input
           type="password"
           name="password"
-          onChange={handleChange}
+          onChange={(e) => setPassword(e.target.value)}
           value={password}
         />
 
-        <button>Login</button>
+        <button>Create account</button>
       </form>
     </DefaultLayout>
   );
