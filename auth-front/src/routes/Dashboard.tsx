@@ -23,8 +23,6 @@ export default function Dashboard() {
     getPosts();
     async function getPosts() {
       const accessToken = auth.getAccessToken();
-      /* const token =  localStorage.getItem("token");
-      const accessToken = token ? (JSON.parse(token) as Token).accessToken : ""; */
       try {
         const response = await fetch("http://localhost:3000/api/posts", {
           method: "GET",
@@ -47,7 +45,7 @@ export default function Dashboard() {
 
   return (
     <PortalLayout>
-      <h1>Dashboard</h1>
+      <h1>Dashboard de {auth.getUser()?.name ?? ""}</h1>
       <div>
         {posts.map((post: Todo) => (
           <div key={post.id}>

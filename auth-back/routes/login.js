@@ -4,6 +4,7 @@ const User = require("../schema/user");
 const jwt = require("jsonwebtoken");
 const { generateAccessToken, generateRefreshToken } = require("../auth/sign");
 const { jsonResponse } = require("../lib/jsonResponse");
+const getUserInfo = require("../lib/getUserInfo");
 //const { jsonResponse } = require("../lib/jsonresponse");
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
 const router = express.Router();
@@ -25,20 +26,25 @@ router.post("/", async function (req, res, next) {
       );
 
       if (passwordCorrect) {
-        let accessToken = generateAccessToken(username);
-        let refreshToken = generateRefreshToken(username);
+        const userInfo = {
+          id: user._id,
+          username: user.username,
+          name: user.name,
+        };
+        const accessToken = generateAccessToken(getUserInfo(user));
+        const refreshToken = generateRefreshToken(getUserInfo(user));
 
         console.log({ accessToken, refreshToken });
 
         // Establece la cookie en la respuesta
-        res.cookie("accessToken", accessToken, {
+        /* res.cookie("accessToken", accessToken, {
           httpOnly: true,
           expires: new Date(Date.now() + 15 * 60 * 1000),
         });
         res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
           expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        });
+        }); */
 
         return res.json(
           jsonResponse(200, {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import DefaultLayout from "../layout/DefaultLayout";
 import { useAuth } from "../auth/AuthProvider";
 import { Navigate } from "react-router-dom";
+import { AuthResponse } from "../types/types";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -29,13 +30,12 @@ export default function Login() {
         body: JSON.stringify({ username, password }),
       });
       if (response.ok) {
-        const json = await response.json();
+        const json = (await response.json()) as AuthResponse;
         console.log(json);
-        auth.setIsAuthenticated(true);
-        auth.setAccessTokenAndRefreshToken(
-          json.body.accessToken,
-          json.body.refreshToken
-        );
+
+        if (json.body.accessToken && json.body.refreshToken) {
+          auth.saveUser(json);
+        }
         //localStorage.setItem("token", JSON.stringify(json.body));
         //auth.setAccessToken(json.body.accessToken);
       }

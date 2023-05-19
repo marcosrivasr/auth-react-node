@@ -10,7 +10,7 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
   function handleSignOut(e: MouseEvent) {
     e.preventDefault();
 
-    auth.setIsAuthenticated(false);
+    //auth.setIsAuthenticated(false);
   }
   return (
     <>
@@ -22,6 +22,9 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
             </li>
             <li>
               <Link to="/me">Profile</Link>
+            </li>
+            <li>
+              <Link to="/me">{auth.getUser()?.username ?? ""}</Link>
             </li>
             <li>
               <a href="#" onClick={handleSignOut}>

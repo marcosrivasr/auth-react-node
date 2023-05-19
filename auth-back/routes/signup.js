@@ -25,16 +25,14 @@ router.post("/", async function (req, res, next) {
     } else {
       const user = new User({ username, password, name });
 
-      const accessToken = generateAccessToken(username);
-      const refreshToken = generateRefreshToken(username);
+      //const accessToken = generateAccessToken(username);
+      //const refreshToken = generateRefreshToken(username);
 
       user.save();
 
       res.json(
         jsonResponse(200, {
           message: "User created successfully",
-          accessToken,
-          refreshToken,
         })
       );
     }
@@ -43,7 +41,7 @@ router.post("/", async function (req, res, next) {
   }
 });
 
-router.post("/login", async function (req, res, next) {
+/* router.post("/login", async function (req, res, next) {
   const { username, password } = req.body;
 
   try {
@@ -113,6 +111,6 @@ router.delete("/logout", async (req, res) => {
   } catch (ex) {
     return next(new Error("Error loging out the user"));
   }
-});
+}); */
 
 module.exports = router;
