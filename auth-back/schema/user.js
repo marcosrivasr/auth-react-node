@@ -1,9 +1,8 @@
-require("dotenv").config();
 const Mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-//const Token = require("./tokenmodel");
-const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
+const { generateAccessToken, generateRefreshToken } = require("../auth/sign");
+const getUserInfo = require("../lib/getUserInfo");
+const Token = require("../schema/token");
 
 const UserSchema = new Mongoose.Schema({
   id: { type: Object },
@@ -42,33 +41,22 @@ UserSchema.methods.isCorrectPassword = async function (password, hash) {
 };
 
 UserSchema.methods.createAccessToken = function () {
-  const { id, username } = this;
-  const accessToken = jwt.sign(
-    { user: { id, username } },
-    ACCESS_TOKEN_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  return accessToken;
+  return generateAccessToken(getUserInfo(this));
 };
 
-UserSchema.methods.createRefreshToken = async function () {
-  const { id, username } = this;
-  const refreshToken = jwt.sign(
-    { user: { id, username } },
-    REFRESH_TOKEN_SECRET,
-    { expiresIn: "1d" }
-  );
+UserSchema.methods.createRefreshToken = async function (next) {
+  const refreshToken = generateRefreshToken(getUserInfo(this));
+
+  console.error("refreshToken", refreshToken);
 
   try {
     await new Token({ token: refreshToken }).save();
-
+    console.log("Token saved", refreshToken);
     return refreshToken;
   } catch (error) {
-    next(new Error("Error creating token"));
+    console.error(error);
+    //next(new Error("Error creating token"));
   }
-
-  return accessToken;
 };
 
 module.exports = Mongoose.model("User", UserSchema);

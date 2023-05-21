@@ -9,6 +9,8 @@ import Dashboard from "./routes/Dashboard.tsx";
 import ProtectedRoute from "./routes/ProtectedRoute.tsx";
 import Profile from "./routes/Profile.tsx";
 
+import "./index.css";
+
 const router = createBrowserRouter([
   {
     path: "/",

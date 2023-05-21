@@ -12,6 +12,7 @@ const AuthContext = createContext({
   getRefreshToken: () => {},
   saveUser: (_userData: AuthResponse) => {},
   getUser: () => ({} as User | undefined),
+  signout: () => {},
 });
 
 interface AuthProviderProps {
@@ -73,27 +74,53 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return user;
   }
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      console.log("useEffect: token", token);
-      const refreshToken = JSON.parse(token).refreshToken;
-      //pedir nuevo access token
-      getNewAccessToken(refreshToken)
-        .then(async (newToken) => {
-          const userInfo = await retrieveUserInfo(newToken!);
-          setUser(userInfo);
-          setAccessToken(newToken!);
-          setIsAuthenticated(true);
+  function signout() {
+    localStorage.removeItem("token");
+    setAccessToken("");
+    setRefreshToken("");
+    setUser(undefined);
+    setIsAuthenticated(false);
+  }
+
+  async function checkAuth() {
+    try {
+      if (!!accessToken) {
+        //existe access token
+        const userInfo = await retrieveUserInfo(accessToken);
+        setUser(userInfo);
+        setAccessToken(accessToken);
+        setIsAuthenticated(true);
+        setIsLoading(false);
+      } else {
+        //no existe access token
+        const token = localStorage.getItem("token");
+        if (token) {
+          console.log("useEffect: token", token);
+          const refreshToken = JSON.parse(token).refreshToken;
+          //pedir nuevo access token
+          getNewAccessToken(refreshToken)
+            .then(async (newToken) => {
+              const userInfo = await retrieveUserInfo(newToken!);
+              setUser(userInfo);
+              setAccessToken(newToken!);
+              setIsAuthenticated(true);
+              setIsLoading(false);
+            })
+            .catch((error) => {
+              console.log(error);
+              setIsLoading(false);
+            });
+        } else {
           setIsLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          setIsLoading(false);
-        });
-    } else {
+        }
+      }
+    } catch (error) {
       setIsLoading(false);
     }
+  }
+
+  useEffect(() => {
+    checkAuth();
   }, []);
 
   return (
@@ -105,6 +132,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         getRefreshToken,
         saveUser,
         getUser,
+        signout,
       }}
     >
       {isloading ? <div>Loading...</div> : children}

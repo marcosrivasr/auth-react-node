@@ -48,10 +48,15 @@ export default function Login() {
   }
   return (
     <DefaultLayout>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form">
+        <h1>Login</h1>
         <label>Username</label>
-        <input name="username" onChange={handleChange} value={username} />
+        <input
+          name="username"
+          type="text"
+          onChange={handleChange}
+          value={username}
+        />
         <label>Password</label>
         <input
           type="password"
