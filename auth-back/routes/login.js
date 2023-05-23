@@ -33,10 +33,20 @@ router.post("/", async function (req, res, next) {
           })
         );
       } else {
-        return next(new Error("username and/or password incorrect"));
+        //res.status(401).json({ error: "username and/or password incorrect" });
+
+        return res.status(401).json(
+          jsonResponse(401, {
+            error: "username and/or password incorrect",
+          })
+        );
       }
     } else {
-      return next(new Error("user does not exist"));
+      return res.status(401).json(
+        jsonResponse(401, {
+          error: "username does not exist",
+        })
+      );
     }
   } catch (err) {
     console.log(err);

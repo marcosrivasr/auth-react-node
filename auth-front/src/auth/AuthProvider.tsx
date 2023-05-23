@@ -1,6 +1,7 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import type { AuthResponse, User } from "../types/types";
 import requestNewAccessToken from "./requestNewAccessToken";
+import { API_URL } from "./authConstants";
 
 const AuthContext = createContext({
   isAuthenticated: false,
@@ -142,7 +143,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 async function retrieveUserInfo(accessToken: string) {
   try {
-    const response = await fetch("http://localhost:3000/api/user", {
+    const response = await fetch(`${API_URL}/user`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

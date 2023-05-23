@@ -2,11 +2,12 @@ import { useState } from "react";
 import DefaultLayout from "../layout/DefaultLayout";
 import { useAuth } from "../auth/AuthProvider";
 import { Navigate } from "react-router-dom";
-import { AuthResponse } from "../types/types";
+import { AuthResponse, AuthResponseError } from "../types/types";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorResponse, setErrorResponse] = useState("");
 
   const auth = useAuth();
 
@@ -36,8 +37,10 @@ export default function Login() {
         if (json.body.accessToken && json.body.refreshToken) {
           auth.saveUser(json);
         }
-        //localStorage.setItem("token", JSON.stringify(json.body));
-        //auth.setAccessToken(json.body.accessToken);
+      } else {
+        const json = (await response.json()) as AuthResponseError;
+
+        setErrorResponse(json.body.error);
       }
     } catch (error) {
       console.log(error);
@@ -50,6 +53,7 @@ export default function Login() {
     <DefaultLayout>
       <form onSubmit={handleSubmit} className="form">
         <h1>Login</h1>
+        {!!errorResponse && <div className="errorMessage">{errorResponse}</div>}
         <label>Username</label>
         <input
           name="username"

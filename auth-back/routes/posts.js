@@ -30,8 +30,6 @@ router.post("/", async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "Error al crear el todo" });
   }
-
-  //posts.push(post);
 });
 
 module.exports = router;
